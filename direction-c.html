@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GALAPA — Direction C / Éditorial électrique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0a;
+    --bg-2:#121212;
+    --bg-3:#181818;
+    --ink:#fff;
+    --ink-70:rgba(255,255,255,.7);
+    --ink-55:rgba(255,255,255,.55);
+    --ink-40:rgba(255,255,255,.4);
+    --line:rgba(255,255,255,.08);
+    --line-2:rgba(255,255,255,.16);
+    --lime:#d9ff4b;
+    --lime-2:#b8e234;
+    --ember:#ff6b35;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:inherit;text-decoration:none}
+  code,.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+  .shell{max-width:1480px;margin:0 auto;padding:40px 56px 120px}
+
+  /* NAV */
+  .nav{display:flex;align-items:center;justify-content:space-between;padding-bottom:32px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;height:22px}
+  .brand img{height:16px;width:auto;display:block}
+  .nav-links{display:flex;gap:4px;font-size:13px;color:var(--ink-55)}
+  .nav-links a{padding:8px 14px;border-radius:100px}
+  .nav-links a:hover{color:var(--ink);background:var(--bg-2)}
+  .nav-links a.active{background:var(--lime);color:#0a0a0a;font-weight:500}
+  .nav-back{font-size:12px;color:var(--ink-55)}
+  .nav-back:hover{color:var(--ink)}
+
+  /* COVER */
+  .cover{padding:96px 0 120px;display:grid;grid-template-columns:120px 1fr;gap:64px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+  .cover::before{content:"";position:absolute;top:-200px;right:-200px;width:680px;height:680px;border-radius:50%;background:radial-gradient(circle,var(--lime) 0%,transparent 65%);opacity:.22;filter:blur(30px);pointer-events:none}
+  .eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--lime);font-weight:500;padding-top:8px;position:relative;z-index:1}
+  .cover h1{font-size:clamp(56px,10vw,160px);line-height:.9;letter-spacing:-.04em;margin:0;font-weight:700;position:relative;z-index:1}
+  .cover h1 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--lime)}
+  .cover h1 sup{font-size:.12em;font-weight:400;top:-5.5em;margin-left:.04em;color:var(--lime)}
+  .cover .lede{max-width:620px;margin:40px 0 0;font-size:19px;line-height:1.55;color:var(--ink-70);position:relative;z-index:1}
+  .cover .stats{margin-top:88px;display:grid;grid-template-columns:repeat(4,auto);gap:64px;position:relative;z-index:1}
+  .cover .stats div{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55)}
+  .cover .stats b{display:block;color:var(--ink);font-size:20px;font-weight:500;letter-spacing:-.01em;margin-top:6px}
+
+  /* SECTION */
+  .section{padding:112px 0 56px;display:grid;grid-template-columns:120px 1fr;gap:64px;border-bottom:1px solid var(--line)}
+  .section:last-child{border-bottom:none}
+  .s-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--lime);font-weight:500;padding-top:8px}
+  .s-title{font-size:clamp(36px,5vw,60px);line-height:1;letter-spacing:-.03em;margin:0 0 24px;font-weight:700}
+  .s-title em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--lime)}
+  .s-intro{max-width:680px;color:var(--ink-70);font-size:17px;line-height:1.6;margin:0 0 56px}
+
+  /* COLOR */
+  .color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .color-chip{border-radius:18px;overflow:hidden;border:1px solid var(--line);display:flex;flex-direction:column;min-height:240px}
+  .color-chip .sw{flex:1;position:relative;padding:24px}
+  .color-chip .sw .name{font-size:18px;font-weight:600;letter-spacing:-.01em}
+  .color-chip .sw .hex{font-family:'JetBrains Mono',monospace;font-size:11px;position:absolute;bottom:20px;left:24px;opacity:.7}
+  .color-chip .meta{padding:14px 18px;font-size:11px;color:var(--ink-70);background:var(--bg-2);display:flex;justify-content:space-between;border-top:1px solid var(--line)}
+  .color-row{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:16px}
+  .color-row .swatch{aspect-ratio:1;border-radius:10px;position:relative;border:1px solid var(--line);display:flex;align-items:flex-end;padding:10px;font-size:10px;font-family:'JetBrains Mono',monospace}
+
+  /* TYPE */
+  .type-intro-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px}
+  .type-card{background:var(--bg-2);border:1px solid var(--line);border-radius:18px;padding:32px;position:relative;overflow:hidden}
+  .type-card.lime{background:var(--lime);color:#0a0a0a;border-color:transparent}
+  .type-card .glyph{font-size:120px;line-height:.9;font-weight:700;letter-spacing:-.04em;margin-bottom:18px}
+  .type-card .glyph.serif{font-family:'Instrument Serif',serif;font-weight:400;font-style:italic}
+  .type-card .name{font-size:18px;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+  .type-card .meta{font-size:12px;color:var(--ink-55);font-family:'JetBrains Mono',monospace;margin-bottom:18px}
+  .type-card.lime .meta{color:rgba(10,10,10,.6)}
+  .type-card .weights{display:flex;gap:6px;flex-wrap:wrap}
+  .type-card .weights span{font-size:11px;padding:4px 10px;border:1px solid var(--line-2);border-radius:100px;color:var(--ink-70)}
+  .type-card.lime .weights span{border-color:rgba(10,10,10,.2);color:rgba(10,10,10,.75)}
+
+  .type-stack{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--line)}
+  .type-row{display:grid;grid-template-columns:160px 1fr 160px;gap:32px;padding:28px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  .type-row .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);font-weight:500}
+  .type-row .spec{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-40);font-family:'JetBrains Mono',monospace;text-align:right}
+  .t-display{font-size:96px;line-height:.92;letter-spacing:-.035em;font-weight:800;margin:0}
+  .t-h1{font-size:56px;line-height:1;letter-spacing:-.03em;font-weight:700;margin:0}
+  .t-h2{font-size:36px;line-height:1.08;letter-spacing:-.025em;font-weight:600;margin:0}
+  .t-italic{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:44px;line-height:1.02;margin:0;color:var(--lime)}
+  .t-h3{font-size:22px;line-height:1.25;letter-spacing:-.01em;font-weight:500;margin:0}
+  .t-body{font-size:16px;line-height:1.6;font-weight:400;margin:0;color:var(--ink-70)}
+  .t-small{font-size:13px;line-height:1.55;font-weight:400;margin:0;color:var(--ink-55)}
+  .t-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--lime);font-weight:500;margin:0}
+
+  /* LOGO */
+  .logo-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px}
+  .logo-tile{background:var(--bg-2);border:1px solid var(--line);border-radius:18px;padding:44px;display:flex;align-items:center;justify-content:center;min-height:240px;position:relative}
+  .logo-tile.lime{background:var(--lime);color:#0a0a0a;border-color:transparent}
+  .logo-tile.invert{background:#fff;color:#0a0a0a}
+  .logo-tile .wm{display:flex;align-items:center;justify-content:center;width:100%}
+  .logo-tile .wm img{max-width:85%;max-height:120px;height:auto;width:auto;display:block}
+  .logo-tile.xl .wm img{max-width:90%;max-height:170px}
+  .logo-tile.sm .wm img{max-width:55%;max-height:60px}
+  .logo-tile.mark .wm img{max-width:130px;max-height:130px}
+  .logo-tile .tag{position:absolute;top:16px;left:18px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55);font-weight:500}
+  .logo-tile.lime .tag,.logo-tile.invert .tag{color:rgba(10,10,10,.55)}
+
+  .logo-rules{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+  .rule{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:24px}
+  .rule .num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--lime);margin-bottom:14px}
+  .rule .t{font-size:15px;font-weight:500;margin-bottom:8px}
+  .rule .d{font-size:13px;color:var(--ink-55);line-height:1.55}
+
+  /* SPACING */
+  .sp-grid{display:flex;gap:12px;align-items:flex-end;padding:32px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .sp-col{display:flex;flex-direction:column;align-items:center;gap:12px;flex:1}
+  .sp-bar{background:linear-gradient(180deg,var(--lime) 0%,var(--ink) 100%);width:100%;border-radius:4px 4px 0 0}
+  .sp-col .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-55);text-align:center;line-height:1.4}
+  .sp-col .lbl b{color:var(--ink);display:block;font-weight:500}
+  .radius-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:24px}
+  .rd{background:var(--bg-2);border:1px solid var(--line);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-55)}
+  .rd b{color:var(--ink);display:block;font-weight:500;margin-bottom:2px}
+
+  /* COMPONENTS */
+  .comp-pane{background:var(--bg-2);border:1px solid var(--line);border-radius:18px;padding:36px;margin-bottom:16px}
+  .comp-pane h4{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);font-weight:500;margin:0 0 28px}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:100px;font:500 14px/1 'Inter',sans-serif;letter-spacing:-.005em;cursor:pointer;border:1px solid transparent;transition:all .2s}
+  .btn .a{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;transition:transform .2s}
+  .btn:hover .a{transform:translateX(3px)}
+  .btn-primary{background:var(--lime);color:#0a0a0a}
+  .btn-primary .a{background:#0a0a0a;color:var(--lime)}
+  .btn-white{background:#fff;color:#0a0a0a}
+  .btn-white .a{background:#0a0a0a;color:#fff}
+  .btn-ghost{background:var(--bg-3);color:#fff;border-color:var(--line-2)}
+  .btn-ghost .a{background:#fff;color:#0a0a0a}
+  .btn-sm{padding:10px 16px;font-size:13px}
+  .btn-sm .a{width:18px;height:18px;font-size:10px}
+  .btn-lg{padding:18px 28px;font-size:15px}
+  .btn-lg .a{width:26px;height:26px;font-size:12px}
+
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:100px;font-size:12px;font-weight:500}
+  .chip-lime{background:var(--lime);color:#0a0a0a}
+  .chip-line{border:1px solid var(--line-2);color:var(--ink-70)}
+  .chip-white{background:#fff;color:#0a0a0a}
+  .chip-ember{background:var(--ember);color:#0a0a0a}
+  .chip .dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+  /* CARDS */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{background:var(--bg-3);border:1px solid var(--line);border-radius:18px;padding:28px;display:flex;flex-direction:column;gap:14px;min-height:260px;position:relative;overflow:hidden;transition:all .3s}
+  .card:hover{transform:translateY(-2px);border-color:var(--line-2)}
+  .card.lime{background:var(--lime);color:#0a0a0a;border-color:transparent}
+  .card .eyebr{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);font-weight:500}
+  .card.lime .eyebr{color:rgba(10,10,10,.7)}
+  .card .t{font-size:22px;font-weight:700;letter-spacing:-.015em;line-height:1.1;margin:0}
+  .card .t em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--lime)}
+  .card.lime .t em{color:#0a0a0a;opacity:.8}
+  .card .d{font-size:14px;color:var(--ink-55);line-height:1.55;margin:0;flex:1}
+  .card.lime .d{color:rgba(10,10,10,.7)}
+  .card .foot{display:flex;justify-content:space-between;align-items:center;font-size:11px;padding-top:16px;border-top:1px solid var(--line);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-55)}
+  .card.lime .foot{border-color:rgba(10,10,10,.12);color:rgba(10,10,10,.65)}
+
+  /* TABLE */
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th,.tbl td{text-align:left;padding:20px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .tbl th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);font-weight:500;padding-bottom:16px}
+  .tbl td:first-child{font-size:18px;font-weight:600;letter-spacing:-.01em}
+  .tbl td.summary{color:var(--ink-70)}
+  .tbl td.type{text-align:right;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  .tbl td.type .pill{display:inline-block;padding:4px 10px;border-radius:100px;background:var(--bg-3);color:var(--ink-70)}
+  .tbl td.type .pill.lime{background:var(--lime);color:#0a0a0a}
+
+  /* INPUT */
+  .field{display:flex;flex-direction:column;gap:8px;max-width:420px}
+  .field label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);font-weight:500}
+  .input{background:var(--bg-3);border:1px solid var(--line-2);border-radius:12px;padding:14px 18px;font-family:inherit;font-size:15px;color:#fff;outline:none;transition:all .2s}
+  .input:focus{border-color:var(--lime);box-shadow:0 0 0 3px rgba(217,255,75,.15)}
+  .input::placeholder{color:var(--ink-40)}
+
+  /* TEMPLATES */
+  .tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .tpl{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--bg-2)}
+  .tpl-head{display:flex;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55)}
+  .tpl-head b{color:var(--lime);font-weight:500}
+  .tpl-body{padding:24px;background:#050505}
+
+  /* EMAIL */
+  .email{background:#000;border:1px solid var(--line);border-radius:10px;overflow:hidden;max-width:560px;margin:0 auto}
+  .email-head{padding:28px 32px;text-align:left;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+  .email-head .wm{font-size:20px;font-weight:700}
+  .email-head .wm sup{font-size:.5em;font-weight:400;top:-1em;color:var(--lime)}
+  .email-head .edn{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime)}
+  .email-hero{padding:48px 32px 24px}
+  .email-hero .eb{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--lime);margin-bottom:16px;font-weight:500}
+  .email-hero h2{font-size:40px;line-height:.98;letter-spacing:-.035em;font-weight:700;margin:0 0 18px}
+  .email-hero h2 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--lime)}
+  .email-hero p{font-size:15px;line-height:1.6;color:var(--ink-70);margin:0}
+  .email-body{padding:0 32px 32px}
+  .email-divider{height:1px;background:var(--line);margin:28px 0}
+  .email-cta{padding:0 32px 32px}
+  .email-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;background:var(--lime);color:#0a0a0a;border-radius:100px;font-weight:600;font-size:14px}
+  .email-btn .a{width:22px;height:22px;border-radius:50%;background:#0a0a0a;color:var(--lime);display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+  .email-foot{padding:20px 32px;background:#050505;border-top:1px solid var(--line);font-size:11px;color:var(--ink-40);letter-spacing:.1em;text-transform:uppercase;display:flex;justify-content:space-between}
+
+  /* BANNER */
+  .banner{aspect-ratio:16/5;background:#000;border-radius:12px;padding:32px 44px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .banner::after{content:"";position:absolute;right:-60px;top:-40px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,var(--lime) 0%,transparent 65%);opacity:.35;filter:blur(10px)}
+  .banner .top{display:flex;justify-content:space-between;position:relative;z-index:1}
+  .banner .top .wm{font-size:18px;font-weight:700}
+  .banner .top .wm sup{font-size:.5em;top:-1em;font-weight:400;color:var(--lime)}
+  .banner .top .tag{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--lime);font-weight:500}
+  .banner .mid{font-size:clamp(28px,3.5vw,52px);line-height:.95;letter-spacing:-.03em;font-weight:700;max-width:72%;position:relative;z-index:1}
+  .banner .mid em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--lime)}
+  .banner .bot{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:1}
+  .banner .bot .url{font-size:13px;color:var(--ink-70)}
+  .banner .bot .cta{padding:10px 16px;background:var(--lime);color:#0a0a0a;border-radius:100px;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:8px}
+  .banner .bot .cta .a{width:18px;height:18px;background:#0a0a0a;color:var(--lime);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+
+  /* SOCIAL - 4 variantes pour montrer la diversité */
+  .social{aspect-ratio:1;border-radius:12px;padding:40px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .social.dark{background:#000;color:#fff}
+  .social.lime{background:var(--lime);color:#0a0a0a}
+  .social.ember{background:var(--ember);color:#0a0a0a}
+  .social.split{background:linear-gradient(135deg,#000 50%,var(--lime) 50%);color:#fff}
+  .social .top{display:flex;justify-content:space-between;align-items:baseline;position:relative;z-index:1}
+  .social .top .wm{font-size:16px;font-weight:700}
+  .social .top .wm sup{font-size:.5em;font-weight:400;top:-1em}
+  .social.dark .top .wm sup{color:var(--lime)}
+  .social.lime .top .wm sup{color:var(--ember)}
+  .social.ember .top .wm sup{color:#0a0a0a;opacity:.6}
+  .social.split .top .wm sup{color:var(--lime)}
+  .social .top .nb{font-family:'JetBrains Mono',monospace;font-size:10px;opacity:.55}
+  .social h3{font-size:34px;line-height:.98;letter-spacing:-.03em;font-weight:700;margin:0;position:relative;z-index:1}
+  .social h3 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400}
+  .social.dark h3 em{color:var(--lime)}
+  .social.lime h3 em{color:#0a0a0a;opacity:.7}
+  .social.ember h3 em{color:#0a0a0a;opacity:.75}
+  .social.split h3 em{color:var(--lime)}
+  .social .bot{display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;letter-spacing:.14em;text-transform:uppercase;position:relative;z-index:1;opacity:.7}
+
+  /* POSTER - full-bleed editorial */
+  .poster{aspect-ratio:3/4;background:#000;border-radius:12px;padding:40px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .poster::before{content:"";position:absolute;inset:0;background:
+    radial-gradient(circle at 80% 20%,rgba(217,255,75,.4) 0%,transparent 45%),
+    radial-gradient(circle at 10% 90%,rgba(255,107,53,.25) 0%,transparent 50%);
+    filter:blur(20px)}
+  .poster .top{display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+  .poster .top .wm{font-size:18px;font-weight:700}
+  .poster .top .wm sup{font-size:.5em;font-weight:400;top:-1em;color:var(--lime)}
+  .poster .top .eb{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--lime);font-weight:500;margin-top:24px}
+  .poster .mid h2{font-size:clamp(40px,6vw,72px);line-height:.9;letter-spacing:-.04em;font-weight:800;margin:0;position:relative;z-index:1}
+  .poster .mid h2 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--lime)}
+  .poster .bot{display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-70);position:relative;z-index:1}
+
+  /* FOOTER */
+  .footer{margin-top:120px;padding-top:48px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-55);letter-spacing:.08em;text-transform:uppercase}
+  .footer a{color:var(--lime)}
+
+  @media (max-width:960px){
+    .shell{padding:24px 20px 80px}
+    .cover,.section{grid-template-columns:1fr;gap:20px}
+    .color-grid{grid-template-columns:repeat(2,1fr)}
+    .cards,.tpl-grid,.logo-grid,.logo-rules,.type-intro-cards{grid-template-columns:1fr}
+    .radius-grid,.color-row{grid-template-columns:repeat(4,1fr)}
+    .type-row{grid-template-columns:1fr;gap:12px}
+    .type-row .spec{text-align:left}
+    .cover .stats{grid-template-columns:1fr 1fr;gap:24px}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a class="brand" href="index.html"><img src="assets/logo-wordmark-white.png" alt="Galapa"/></a>
+    <div class="nav-links">
+      <a href="direction-a.html">A · Noir signature</a>
+      <a href="direction-b.html">B · Clarté Apple-like</a>
+      <a href="direction-c.html" class="active">C · Éditorial électrique</a>
+    </div>
+    <a href="index.html" class="nav-back">← Index</a>
+  </nav>
+
+  <!-- COVER -->
+  <section class="cover">
+    <div class="eyebrow">Direction C</div>
+    <div>
+      <h1>Éditorial,<br/><em>électrique.</em><sup>✱</sup></h1>
+      <p class="lede">On garde le plateau noir du site, on y ajoute un accent fluo lime et un ton éditorial affirmé. Pensée pour les fils sociaux saturés, les bannières display, les couvertures d'ebook. Plus remarquable, plus risquée, plus mémorable.</p>
+      <div class="stats">
+        <div>Dominante<b>Noir plateau</b></div>
+        <div>Accent primaire<b>Lime 217</b></div>
+        <div>Accent secondaire<b>Ember 255</b></div>
+        <div>Usage<b>Social, display, covers</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLOR -->
+  <section class="section">
+    <div class="s-label">01 / Couleurs</div>
+    <div>
+      <h2 class="s-title">Le noir tient.<br/>Le <em>lime</em> frappe.</h2>
+      <p class="s-intro">Le noir plateau reste le sol. Le lime (#D9FF4B) est l'accent principal — présent partout : astérisque, CTAs, italiques, fonds ponctuels. L'ember (orange brûlé) joue le rôle de contrepoint chaud, utilisé 1 fois sur 5 pour éviter la monotonie.</p>
+
+      <div class="color-grid">
+        <div class="color-chip">
+          <div class="sw" style="background:#0a0a0a"><div class="name">Ink</div><div class="hex">#0A0A0A</div></div>
+          <div class="meta"><span>Fond · 60%</span><span>21:1</span></div>
+        </div>
+        <div class="color-chip">
+          <div class="sw" style="background:#d9ff4b;color:#0a0a0a"><div class="name">Lime</div><div class="hex">#D9FF4B</div></div>
+          <div class="meta"><span>Accent · 30%</span><span>17:1</span></div>
+        </div>
+        <div class="color-chip">
+          <div class="sw" style="background:#ff6b35;color:#0a0a0a"><div class="name">Ember</div><div class="hex">#FF6B35</div></div>
+          <div class="meta"><span>Accent · 5%</span><span>7:1</span></div>
+        </div>
+        <div class="color-chip">
+          <div class="sw" style="background:#fff;color:#0a0a0a"><div class="name">Paper</div><div class="hex">#FFFFFF</div></div>
+          <div class="meta"><span>Typo · 5%</span><span>21:1</span></div>
+        </div>
+      </div>
+
+      <div class="color-row">
+        <div class="swatch" style="background:#0a0a0a">0A</div>
+        <div class="swatch" style="background:#121212">12</div>
+        <div class="swatch" style="background:#181818">18</div>
+        <div class="swatch" style="background:#222">22</div>
+        <div class="swatch" style="background:#f2ff99;color:#0a0a0a">lime 30</div>
+        <div class="swatch" style="background:#d9ff4b;color:#0a0a0a">lime 100</div>
+        <div class="swatch" style="background:#b8e234;color:#0a0a0a">lime 140</div>
+        <div class="swatch" style="background:#6a8a00;color:#0a0a0a">lime 180</div>
+      </div>
+      <div class="color-row">
+        <div class="swatch" style="background:#ffd6c3;color:#0a0a0a">ember 20</div>
+        <div class="swatch" style="background:#ff9c78;color:#0a0a0a">ember 60</div>
+        <div class="swatch" style="background:#ff6b35;color:#0a0a0a">ember 100</div>
+        <div class="swatch" style="background:#c84e20;color:#fff">ember 140</div>
+        <div class="swatch" style="background:rgba(255,255,255,.05)">05%</div>
+        <div class="swatch" style="background:rgba(255,255,255,.2)">20%</div>
+        <div class="swatch" style="background:rgba(255,255,255,.55);color:#0a0a0a">55%</div>
+        <div class="swatch" style="background:rgba(255,255,255,.85);color:#0a0a0a">85%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TYPE -->
+  <section class="section">
+    <div class="s-label">02 / Typographie</div>
+    <div>
+      <h2 class="s-title">Plus <em>lourd</em>,<br/>plus <em>affirmé</em>.</h2>
+      <p class="s-intro">Inter monte en poids : on passe à 700/800 pour les titres, même en H2. Le serif italique reste en accent, mais toujours en lime — jamais en blanc. Le ton est éditorial, proche des magazines design.</p>
+
+      <div class="type-intro-cards">
+        <div class="type-card">
+          <div class="glyph">Aa</div>
+          <div class="name">Inter</div>
+          <div class="meta">Sans-serif · 700/800 en titres</div>
+          <div class="weights"><span>400</span><span>500</span><span>600</span><span>700</span><span>800</span><span>900</span></div>
+        </div>
+        <div class="type-card lime">
+          <div class="glyph serif">Aa</div>
+          <div class="name">Instrument Serif</div>
+          <div class="meta">Serif · Accent italique lime</div>
+          <div class="weights"><span>Italic</span></div>
+        </div>
+      </div>
+
+      <div class="type-stack">
+        <div class="type-row"><span class="k">Display</span><h3 class="t-display">Scary, <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--lime);font-weight:400">easy</em>.</h3><span class="spec">Inter 800 + Italic · 96/88</span></div>
+        <div class="type-row"><span class="k">H1</span><h3 class="t-h1">Future-proof digital services.</h3><span class="spec">Inter 700 · 56/56</span></div>
+        <div class="type-row"><span class="k">H2</span><h3 class="t-h2">Agency quality, <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--lime);font-weight:400">without</em> the premium.</h3><span class="spec">Inter 600 + Italic · 36/40</span></div>
+        <div class="type-row"><span class="k">Italic</span><p class="t-italic">quietly confident, loudly capable.</p><span class="spec">Instrument Italic · 44/45</span></div>
+        <div class="type-row"><span class="k">Body</span><p class="t-body">We believe in a lean, streamlined process. Fast, without cutting corners. Built for agencies that need quality without the premium.</p><span class="spec">Inter 400 · 16/26</span></div>
+        <div class="type-row"><span class="k">Eyebrow</span><p class="t-eyebrow">01 / White-label notes</p><span class="spec">Inter 500 · 11/14 · +20%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGO -->
+  <section class="section">
+    <div class="s-label">03 / Logo</div>
+    <div>
+      <h2 class="s-title">L'astérisque<br/>devient <em>lime</em>.</h2>
+      <p class="s-intro">Le wordmark GALAPA reste en caps. Le seul changement : l'astérisque passe systématiquement en lime (ou ember en contrepoint). C'est le point d'ancrage visuel de la direction — reconnaissable en 1/10e de seconde sur un fil LinkedIn.</p>
+
+      <div class="logo-grid">
+        <div class="logo-tile xl"><span class="tag">Wordmark · blanc</span><div class="wm"><img src="assets/logo-wordmark-white.png" alt="GALAPA"/></div></div>
+        <div class="logo-tile lime mark"><span class="tag">Marque ✱ · lime</span><div class="wm"><img src="assets/logo-mark-black.png" alt="Astérisque"/></div></div>
+        <div class="logo-tile invert sm"><span class="tag">Wordmark · compact</span><div class="wm"><img src="assets/logo-wordmark-white.png" alt="GALAPA"/></div></div>
+      </div>
+
+      <div class="logo-rules">
+        <div class="rule"><div class="num">01 / FAIRE</div><div class="t">Astérisque lime par défaut</div><div class="d">Sur fond noir, l'astérisque est toujours lime. Jamais blanc en direction C.</div></div>
+        <div class="rule"><div class="num">02 / FAIRE</div><div class="t">Ember 1 fois sur 5</div><div class="d">L'orange brûlé vient ponctuer, éviter la monochromie lime. À réserver aux pièces qui doivent surprendre.</div></div>
+        <div class="rule"><div class="num">03 / FAIRE</div><div class="t">Bloc lime en fond plein</div><div class="d">Le logo s'installe aussi sur un aplat lime pleine page — couverture de post carrousel, bannière haut d'email.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPACING -->
+  <section class="section">
+    <div class="s-label">04 / Espace &amp; rayons</div>
+    <div>
+      <h2 class="s-title">Même base,<br/>plus de <em>densité</em>.</h2>
+      <p class="s-intro">Les tokens d'espacement et de rayon restent identiques aux directions A et B. Ce qui change, c'est l'usage : la direction C privilégie une densité plus forte (cartes collées, tableaux serrés) pour libérer de la place au contraste chromatique.</p>
+
+      <div class="sp-grid">
+        <div class="sp-col"><div class="sp-bar" style="height:4px"></div><div class="lbl"><b>4</b>xs</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:8px"></div><div class="lbl"><b>8</b>sm</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:12px"></div><div class="lbl"><b>12</b></div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:16px"></div><div class="lbl"><b>16</b>md</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:24px"></div><div class="lbl"><b>24</b></div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:32px"></div><div class="lbl"><b>32</b>lg</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:48px"></div><div class="lbl"><b>48</b></div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:64px"></div><div class="lbl"><b>64</b>xl</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:96px"></div><div class="lbl"><b>96</b></div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:128px"></div><div class="lbl"><b>128</b>2xl</div></div>
+      </div>
+
+      <div class="radius-grid">
+        <div class="rd" style="border-radius:0"><b>0</b>none</div>
+        <div class="rd" style="border-radius:6px"><b>6</b>xs</div>
+        <div class="rd" style="border-radius:12px"><b>12</b>sm</div>
+        <div class="rd" style="border-radius:18px"><b>18</b>md</div>
+        <div class="rd" style="border-radius:24px"><b>24</b>lg</div>
+        <div class="rd" style="border-radius:999px"><b>999</b>pill</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPONENTS -->
+  <section class="section">
+    <div class="s-label">05 / Composants</div>
+    <div>
+      <h2 class="s-title">La pille lime<br/>est le <em>CTA</em> signature.</h2>
+      <p class="s-intro">En direction C, le bouton primaire passe en lime — c'est le geste commercial. La pille blanche devient secondaire. Les cartes introduisent une variante pleine lime pour les "hero" cards. Un nouveau état focus lime-glow améliore l'accessibilité sur les champs.</p>
+
+      <div class="comp-pane">
+        <h4>Boutons</h4>
+        <div class="btn-row" style="margin-bottom:20px">
+          <button class="btn btn-primary">Talk with Francis <span class="a">→</span></button>
+          <button class="btn btn-white">Our plans <span class="a">→</span></button>
+          <button class="btn btn-ghost">Learn more <span class="a">→</span></button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary btn-sm">Small <span class="a">→</span></button>
+          <button class="btn btn-primary">Default <span class="a">→</span></button>
+          <button class="btn btn-primary btn-lg">Large <span class="a">→</span></button>
+        </div>
+      </div>
+
+      <div class="comp-pane">
+        <h4>Puces &amp; badges</h4>
+        <div class="btn-row">
+          <span class="chip chip-lime">Standard Plan</span>
+          <span class="chip chip-line">Custom Project</span>
+          <span class="chip chip-ember">New</span>
+          <span class="chip chip-white">Agency partner</span>
+          <span class="chip chip-line"><span class="dot" style="background:var(--lime)"></span>Live</span>
+        </div>
+      </div>
+
+      <div class="comp-pane">
+        <h4>Cartes</h4>
+        <div class="cards">
+          <article class="card lime">
+            <span class="eyebr">01 · Speed</span>
+            <h3 class="t">Shipped in weeks,<br/>not months.</h3>
+            <p class="d">Des sites robustes, livrés vite. Processus lean, outillage automatisé.</p>
+            <div class="foot"><span>Hero card</span><span>→</span></div>
+          </article>
+          <article class="card">
+            <span class="eyebr">02 · Price</span>
+            <h3 class="t">Agency quality,<br/><em>without</em> the premium.</h3>
+            <p class="d">La qualité d'une agence haut de gamme, sans la facture qui va avec.</p>
+            <div class="foot"><span>Custom project</span><span>→</span></div>
+          </article>
+          <article class="card">
+            <span class="eyebr">03 · Quality</span>
+            <h3 class="t">Built to last,<br/>not to <em>impress</em>.</h3>
+            <p class="d">Pas de gadgets qui cassent en six mois. Faits pour durer et grandir.</p>
+            <div class="foot"><span>Agency partner</span><span>→</span></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="comp-pane">
+        <h4>Tableau — Projets</h4>
+        <table class="tbl">
+          <thead><tr><th>Client</th><th>Summary</th><th style="text-align:right">Type</th></tr></thead>
+          <tbody>
+            <tr><td>Boreal</td><td class="summary">Empowering Community Conversations</td><td class="type"><span class="pill lime">Custom</span></td></tr>
+            <tr><td>Malmö</td><td class="summary">Real Estate meets scandinavian lifestyle</td><td class="type"><span class="pill">Standard</span></td></tr>
+            <tr><td>Auberge Internationale de Québec</td><td class="summary">Where Québec Adventures Begin</td><td class="type"><span class="pill">Standard</span></td></tr>
+            <tr><td>Constromax</td><td class="summary">A modern general contractor redefining luxury</td><td class="type"><span class="pill">Standard</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="comp-pane">
+        <h4>Champ — focus lime</h4>
+        <div class="field">
+          <label>Votre courriel</label>
+          <input class="input" value="bonjour@agence.com" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEMPLATES -->
+  <section class="section">
+    <div class="s-label">06 / Gabarits</div>
+    <div>
+      <h2 class="s-title">Fait pour <em>stopper</em><br/>le scroll.</h2>
+      <p class="s-intro">La direction C donne son meilleur sur les formats courts à fort contraste : post carrousel LinkedIn, bannière display, cover Meta. Quatre variantes de social ci-dessous montrent qu'on peut alterner dark / lime / ember / split sans jamais perdre l'identité.</p>
+
+      <!-- Email -->
+      <div class="tpl" style="margin-bottom:20px">
+        <div class="tpl-head"><span>E-mail · Announcement</span><b>600 × fluid</b></div>
+        <div class="tpl-body">
+          <div class="email">
+            <div class="email-head">
+              <div class="wm"><img src="assets/logo-wordmark-white.png" alt="GALAPA" style="height:22px;width:auto;display:block"/></div>
+              <div class="edn">Announcement</div>
+            </div>
+            <div class="email-hero">
+              <div class="eb">April 2026 · White-label partners</div>
+              <h2>Scary easy,<br/><em>fully</em> new.</h2>
+              <p>Nouveau plan white-label, nouveau calendrier, même promesse : livrer des sites agences qualité, sans la facture haut de gamme.</p>
+            </div>
+            <div class="email-body">
+              <div class="email-divider"></div>
+              <p style="font-size:13px;line-height:1.6;color:var(--ink-55);margin:0">Présenté en live vendredi 26 avril, 14h. 30 minutes. Questions bienvenues.</p>
+            </div>
+            <div class="email-cta"><a class="email-btn">Save my seat <span class="a">→</span></a></div>
+            <div class="email-foot"><span>Galapa ✱ Montréal</span><span>Se désabonner</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner -->
+      <div class="tpl" style="margin-bottom:20px">
+        <div class="tpl-head"><span>Bannière display · LinkedIn cover</span><b>1600 × 500</b></div>
+        <div class="tpl-body" style="padding:20px">
+          <div class="banner">
+            <div class="top">
+              <div class="wm"><img src="assets/logo-wordmark-white.png" alt="GALAPA" style="height:20px;width:auto;display:block"/></div>
+              <div class="tag">White-label · 2026</div>
+            </div>
+            <div class="mid">Agency quality,<br/><em>without</em> the premium.</div>
+            <div class="bot">
+              <span class="url">galapadigital.com</span>
+              <span class="cta">Talk with Francis <span class="a">→</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social 4-up -->
+      <div class="tpl" style="margin-bottom:20px">
+        <div class="tpl-head"><span>Social · 4 variantes</span><b>1200 × 1200 · Instagram/LinkedIn</b></div>
+        <div class="tpl-body" style="padding:20px">
+          <div class="tpl-grid">
+            <div class="social dark">
+              <div class="top"><div class="wm"><img src="assets/logo-wordmark-white.png" alt="GALAPA" style="height:18px;width:auto;display:block"/></div><div class="nb">01/04</div></div>
+              <h3>Shipped <em>in weeks,</em><br/>not months.</h3>
+              <div class="bot"><span>Process</span><span>galapadigital.com</span></div>
+            </div>
+            <div class="social lime">
+              <div class="top"><div class="wm"><img src="assets/logo-wordmark-black.png" alt="GALAPA" style="height:18px;width:auto;display:block"/></div><div class="nb">02/04</div></div>
+              <h3>Scary<br/><em>easy.</em></h3>
+              <div class="bot"><span>Tagline</span><span>galapadigital.com</span></div>
+            </div>
+            <div class="social ember">
+              <div class="top"><div class="wm"><img src="assets/logo-wordmark-white.png" alt="GALAPA" style="height:18px;width:auto;display:block"/></div><div class="nb">03/04</div></div>
+              <h3>Without<br/>the <em>premium.</em></h3>
+              <div class="bot"><span>Pricing</span><span>galapadigital.com</span></div>
+            </div>
+            <div class="social split">
+              <div class="top"><div class="wm"><img src="assets/logo-wordmark-white.png" alt="GALAPA" style="height:18px;width:auto;display:block"/></div><div class="nb">04/04</div></div>
+              <h3>Quietly<br/><em>capable.</em></h3>
+              <div class="bot"><span>About</span><span>galapadigital.com</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posters / Ebook -->
+      <div class="tpl">
+        <div class="tpl-head"><span>Couvertures · Ebook, poster, roll-up</span><b>3:4</b></div>
+        <div class="tpl-body" style="padding:20px">
+          <div class="tpl-grid">
+            <div class="poster">
+              <div class="top">
+                <div class="wm"><img src="assets/logo-wordmark-white.png" alt="GALAPA" style="height:18px;width:auto;display:block"/></div>
+                <div class="eb">Ebook · 01 · FR</div>
+              </div>
+              <div class="mid"><h2>Lancer un<br/>site, <em>scary</em><br/>easy.</h2></div>
+              <div class="bot"><span>Un guide pour agences</span><span>42 pp.</span></div>
+            </div>
+            <div class="poster" style="background:var(--lime);color:#0a0a0a">
+              <div class="top">
+                <div class="wm"><img src="assets/logo-wordmark-black.png" alt="GALAPA" style="height:20px;width:auto;display:block"/></div>
+                <div class="eb" style="color:#0a0a0a;opacity:.7">Event · 2026</div>
+              </div>
+              <div class="mid"><h2 style="color:#0a0a0a">Agency<br/>night,<br/><em style="color:#0a0a0a;opacity:.75">April 26</em>.</h2></div>
+              <div class="bot" style="color:rgba(10,10,10,.65)"><span>La Vitrola · Montréal</span><span>19h</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Direction C · Éditorial électrique</span>
+    <span><a href="index.html">← Retour index · Comparer les 3 directions</a></span>
+  </div>
+
+</div>
+</body>
+</html>

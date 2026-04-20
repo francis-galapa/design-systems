@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GALAPA — Direction B / Clarté Apple-like</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fafaf7;
+    --bg-2:#f3f1ec;
+    --bg-3:#ffffff;
+    --ink:#0a0a0a;
+    --ink-70:rgba(10,10,10,.7);
+    --ink-55:rgba(10,10,10,.55);
+    --ink-40:rgba(10,10,10,.4);
+    --ink-20:rgba(10,10,10,.2);
+    --line:rgba(10,10,10,.08);
+    --line-2:rgba(10,10,10,.14);
+    --accent:#c65a3a; /* rouge-terracotta discret, rappel de chaleur humaine */
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:inherit;text-decoration:none}
+  code,.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+
+  .shell{max-width:1480px;margin:0 auto;padding:40px 56px 120px}
+
+  /* NAV */
+  .nav{display:flex;align-items:center;justify-content:space-between;padding-bottom:32px;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;height:22px}
+  .brand img{height:16px;width:auto;display:block}
+  .nav-links{display:flex;gap:4px;font-size:13px;color:var(--ink-55)}
+  .nav-links a{padding:8px 14px;border-radius:100px;transition:all .2s}
+  .nav-links a:hover{color:var(--ink);background:var(--bg-2)}
+  .nav-links a.active{color:var(--ink);background:var(--ink);color:var(--bg)}
+  .nav-back{font-size:12px;color:var(--ink-55)}
+  .nav-back:hover{color:var(--ink)}
+
+  /* COVER */
+  .cover{padding:120px 0 120px;display:grid;grid-template-columns:120px 1fr;gap:64px;border-bottom:1px solid var(--line);position:relative}
+  .eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-55);font-weight:500;padding-top:8px}
+  .cover h1{font-size:clamp(56px,10vw,160px);line-height:.9;letter-spacing:-.04em;margin:0;font-weight:600}
+  .cover h1 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.02em}
+  .cover h1 sup{font-size:.12em;font-weight:400;top:-5.5em;margin-left:.04em;color:var(--accent)}
+  .cover .lede{max-width:620px;margin:40px 0 0;font-size:19px;line-height:1.55;color:var(--ink-70)}
+  .cover .stats{margin-top:88px;display:grid;grid-template-columns:repeat(4,auto);gap:64px}
+  .cover .stats div{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55)}
+  .cover .stats b{display:block;color:var(--ink);font-size:20px;font-weight:500;letter-spacing:-.01em;margin-top:6px}
+
+  /* SECTION */
+  .section{padding:120px 0 64px;display:grid;grid-template-columns:120px 1fr;gap:64px;border-bottom:1px solid var(--line)}
+  .section:last-child{border-bottom:none}
+  .s-label{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-55);font-weight:500;padding-top:8px}
+  .s-title{font-size:clamp(36px,5vw,64px);line-height:.98;letter-spacing:-.03em;margin:0 0 24px;font-weight:600}
+  .s-title em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.015em}
+  .s-intro{max-width:680px;color:var(--ink-70);font-size:17px;line-height:1.6;margin:0 0 56px}
+
+  /* COLOR */
+  .color-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:16px}
+  .color-chip{border-radius:20px;overflow:hidden;border:1px solid var(--line);display:flex;flex-direction:column;min-height:240px;background:#fff}
+  .color-chip .sw{flex:1;position:relative;padding:28px}
+  .color-chip .sw .name{font-size:22px;font-weight:600;letter-spacing:-.015em}
+  .color-chip .sw .hex{font-family:'JetBrains Mono',monospace;font-size:12px;position:absolute;bottom:22px;left:28px;opacity:.7}
+  .color-chip .meta{padding:18px 22px;font-size:12px;color:var(--ink-70);background:var(--bg);display:flex;justify-content:space-between;border-top:1px solid var(--line)}
+  .color-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:16px}
+  .color-row .swatch{aspect-ratio:1;border-radius:14px;position:relative;border:1px solid var(--line);display:flex;align-items:flex-end;padding:12px;font-size:10px;font-family:'JetBrains Mono',monospace}
+
+  /* TYPE */
+  .type-intro-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px}
+  .type-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:36px}
+  .type-card .glyph{font-size:120px;line-height:.9;font-weight:600;letter-spacing:-.04em;margin-bottom:18px}
+  .type-card .glyph.serif{font-family:'Instrument Serif',serif;font-weight:400;font-style:italic;color:var(--accent)}
+  .type-card .name{font-size:20px;font-weight:600;margin-bottom:6px;letter-spacing:-.015em}
+  .type-card .meta{font-size:12px;color:var(--ink-55);font-family:'JetBrains Mono',monospace;margin-bottom:20px}
+  .type-card .weights{display:flex;gap:6px;flex-wrap:wrap}
+  .type-card .weights span{font-size:11px;padding:5px 11px;border:1px solid var(--line-2);border-radius:100px;color:var(--ink-70)}
+
+  .type-stack{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid var(--line)}
+  .type-row{display:grid;grid-template-columns:160px 1fr 160px;gap:32px;padding:32px 0;border-bottom:1px solid var(--line);align-items:baseline}
+  .type-row .k{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55);font-weight:500}
+  .type-row .spec{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-40);font-family:'JetBrains Mono',monospace;text-align:right}
+  .t-display{font-size:104px;line-height:.92;letter-spacing:-.04em;font-weight:600;margin:0}
+  .t-h1{font-size:64px;line-height:1;letter-spacing:-.035em;font-weight:600;margin:0}
+  .t-h2{font-size:40px;line-height:1.08;letter-spacing:-.025em;font-weight:500;margin:0}
+  .t-italic{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;font-size:48px;line-height:1.02;letter-spacing:-.015em;margin:0;color:var(--accent)}
+  .t-h3{font-size:24px;line-height:1.25;letter-spacing:-.015em;font-weight:500;margin:0}
+  .t-body{font-size:17px;line-height:1.6;font-weight:400;margin:0;color:var(--ink-70)}
+  .t-small{font-size:14px;line-height:1.55;font-weight:400;margin:0;color:var(--ink-55)}
+  .t-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-55);font-weight:500;margin:0}
+
+  /* LOGO */
+  .logo-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px}
+  .logo-tile{background:#fff;border:1px solid var(--line);border-radius:20px;padding:48px;display:flex;align-items:center;justify-content:center;min-height:240px;position:relative}
+  .logo-tile.invert{background:var(--ink);color:#fff}
+  .logo-tile.accent{background:var(--accent);color:#fff}
+  .logo-tile .wm{display:flex;align-items:center;justify-content:center;width:100%}
+  .logo-tile .wm img{max-width:85%;max-height:120px;height:auto;width:auto;display:block}
+  .logo-tile.xl .wm img{max-width:90%;max-height:170px}
+  .logo-tile.sm .wm img{max-width:55%;max-height:60px}
+  .logo-tile.mark .wm img{max-width:130px;max-height:130px}
+  .logo-tile .tag{position:absolute;top:16px;left:18px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55);font-weight:500}
+  .logo-tile.invert .tag,.logo-tile.accent .tag{color:rgba(255,255,255,.6)}
+
+  .logo-rules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+  .rule{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px}
+  .rule .num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-40);margin-bottom:14px}
+  .rule .t{font-size:16px;font-weight:500;margin-bottom:8px;letter-spacing:-.01em}
+  .rule .d{font-size:14px;color:var(--ink-55);line-height:1.55}
+
+  /* SPACING */
+  .sp-grid{display:flex;gap:12px;align-items:flex-end;padding:40px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .sp-col{display:flex;flex-direction:column;align-items:center;gap:14px;flex:1}
+  .sp-bar{background:linear-gradient(180deg,var(--ink) 0%,var(--ink-20) 100%);width:100%;border-radius:4px 4px 0 0}
+  .sp-col .lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-55);text-align:center;line-height:1.4}
+  .sp-col .lbl b{color:var(--ink);display:block;font-weight:500}
+
+  .radius-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:24px}
+  .rd{background:#fff;border:1px solid var(--line);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:18px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-55)}
+  .rd b{color:var(--ink);display:block;font-weight:500;margin-bottom:2px}
+
+  /* COMPONENTS */
+  .comp-pane{background:#fff;border:1px solid var(--line);border-radius:20px;padding:40px;margin-bottom:16px}
+  .comp-pane h4{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55);font-weight:500;margin:0 0 28px}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:100px;font:500 14px/1 'Inter',sans-serif;letter-spacing:-.005em;transition:all .2s;cursor:pointer;border:1px solid transparent}
+  .btn .a{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;transition:transform .2s}
+  .btn:hover .a{transform:translateX(3px)}
+  .btn-primary{background:var(--ink);color:#fff}
+  .btn-primary .a{background:#fff;color:var(--ink)}
+  .btn-secondary{background:transparent;color:var(--ink);border-color:var(--line-2)}
+  .btn-secondary .a{background:var(--ink);color:#fff}
+  .btn-accent{background:var(--accent);color:#fff}
+  .btn-accent .a{background:#fff;color:var(--accent)}
+  .btn-ghost{background:var(--bg-2);color:var(--ink)}
+  .btn-ghost .a{background:var(--ink);color:#fff}
+  .btn-sm{padding:10px 16px;font-size:13px}
+  .btn-sm .a{width:18px;height:18px;font-size:10px}
+  .btn-lg{padding:18px 28px;font-size:15px}
+  .btn-lg .a{width:26px;height:26px;font-size:12px}
+
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:100px;font-size:12px;font-weight:500}
+  .chip-line{border:1px solid var(--line-2);color:var(--ink-70);background:#fff}
+  .chip-solid{background:var(--ink);color:#fff}
+  .chip-accent{background:var(--accent);color:#fff}
+  .chip .dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+  /* CARDS */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:32px;display:flex;flex-direction:column;gap:16px;min-height:260px;transition:all .3s}
+  .card:hover{transform:translateY(-2px);border-color:var(--line-2)}
+  .card .eyebr{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55);font-weight:500}
+  .card .t{font-size:26px;font-weight:600;letter-spacing:-.02em;line-height:1.08;margin:0}
+  .card .t em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--accent)}
+  .card .d{font-size:15px;color:var(--ink-55);line-height:1.55;margin:0;flex:1}
+  .card .foot{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-55);padding-top:18px;border-top:1px solid var(--line)}
+
+  /* TABLE */
+  .tbl{width:100%;border-collapse:collapse}
+  .tbl th,.tbl td{text-align:left;padding:22px 0;border-bottom:1px solid var(--line);font-size:15px}
+  .tbl th{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55);font-weight:500;padding-bottom:18px}
+  .tbl td:first-child{font-size:20px;font-weight:500;letter-spacing:-.015em}
+  .tbl td.summary{color:var(--ink-70)}
+  .tbl td.type{color:var(--ink-55);text-align:right;font-size:13px}
+
+  /* INPUT */
+  .field{display:flex;flex-direction:column;gap:8px;max-width:440px}
+  .field label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55);font-weight:500}
+  .input{background:#fff;border:1px solid var(--line-2);border-radius:14px;padding:16px 20px;font-family:inherit;font-size:15px;color:var(--ink);outline:none;transition:border-color .2s}
+  .input:focus{border-color:var(--ink)}
+  .input::placeholder{color:var(--ink-40)}
+
+  /* TEMPLATES */
+  .tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .tpl{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff}
+  .tpl-head{display:flex;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55)}
+  .tpl-head b{color:var(--ink);font-weight:500}
+  .tpl-body{padding:28px;background:var(--bg)}
+
+  /* EMAIL */
+  .email{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;max-width:560px;margin:0 auto}
+  .email-head{padding:32px 32px 24px;text-align:left;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+  .email-head .wm{font-size:20px;font-weight:600;letter-spacing:-.015em}
+  .email-head .wm sup{font-size:.5em;font-weight:400;top:-1em;color:var(--accent)}
+  .email-head .edn{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55)}
+  .email-hero{padding:56px 40px 32px}
+  .email-hero .eb{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;font-weight:500}
+  .email-hero h2{font-size:40px;line-height:.98;letter-spacing:-.035em;font-weight:600;margin:0 0 20px;color:var(--ink)}
+  .email-hero h2 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--accent)}
+  .email-hero p{font-size:16px;line-height:1.6;color:var(--ink-70);margin:0}
+  .email-body{padding:0 40px 40px}
+  .email-divider{height:1px;background:var(--line);margin:36px 0}
+  .email-cta{padding:0 40px 48px}
+  .email-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;background:var(--ink);color:#fff;border-radius:100px;font-weight:500;font-size:14px}
+  .email-btn .a{width:22px;height:22px;border-radius:50%;background:#fff;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+  .email-foot{padding:28px 40px;background:var(--bg);border-top:1px solid var(--line);font-size:11px;color:var(--ink-40);letter-spacing:.08em;display:flex;justify-content:space-between;text-transform:uppercase}
+
+  /* BANNER */
+  .banner{aspect-ratio:16/5;background:#fff;border:1px solid var(--line);border-radius:14px;padding:40px 52px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .banner::after{content:"";position:absolute;right:-80px;top:-60px;width:320px;height:320px;border-radius:50%;background:var(--accent);opacity:.08}
+  .banner .top{display:flex;justify-content:space-between;position:relative;z-index:1}
+  .banner .top .wm{font-size:20px;font-weight:600;letter-spacing:-.015em}
+  .banner .top .wm sup{font-size:.5em;top:-1em;font-weight:400;color:var(--accent)}
+  .banner .top .tag{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-55);font-weight:500}
+  .banner .mid{font-size:clamp(32px,4vw,56px);line-height:.95;letter-spacing:-.035em;font-weight:600;max-width:72%;position:relative;z-index:1}
+  .banner .mid em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--accent)}
+  .banner .bot{display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:1}
+  .banner .bot .url{font-size:13px;color:var(--ink-70)}
+  .banner .bot .cta{padding:10px 16px;background:var(--ink);color:#fff;border-radius:100px;font-weight:500;font-size:13px;display:inline-flex;align-items:center;gap:8px}
+  .banner .bot .cta .a{width:18px;height:18px;background:#fff;color:var(--ink);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px}
+
+  /* SOCIAL */
+  .social{aspect-ratio:1;background:#fff;border:1px solid var(--line);border-radius:14px;padding:44px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .social.accent{background:var(--accent);color:#fff;border-color:transparent}
+  .social .top{display:flex;justify-content:space-between;align-items:baseline;position:relative;z-index:1}
+  .social .top .wm{font-size:18px;font-weight:600;letter-spacing:-.015em}
+  .social .top .wm sup{font-size:.5em;font-weight:400;top:-1em;color:var(--accent)}
+  .social.accent .top .wm sup{color:#fff}
+  .social .top .nb{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-40)}
+  .social.accent .top .nb{color:rgba(255,255,255,.6)}
+  .social h3{font-size:40px;line-height:.98;letter-spacing:-.035em;font-weight:600;margin:0}
+  .social h3 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--accent)}
+  .social.accent h3 em{color:#fff;opacity:.8}
+  .social .bot{display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55)}
+  .social.accent .bot{color:rgba(255,255,255,.7)}
+
+  /* EBOOK COVER */
+  .ebook-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:16px}
+  .ebook{aspect-ratio:3/4;background:#fff;border:1px solid var(--line);border-radius:14px;padding:48px 40px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+  .ebook.dark{background:var(--ink);color:#fff;border-color:transparent}
+  .ebook .top{display:flex;flex-direction:column;gap:8px;position:relative;z-index:1}
+  .ebook .top .wm{font-size:16px;font-weight:600;letter-spacing:-.015em}
+  .ebook .top .wm sup{font-size:.5em;font-weight:400;top:-1em;color:var(--accent)}
+  .ebook.dark .top .wm sup{color:var(--accent)}
+  .ebook .top .eb{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-55);font-weight:500;margin-top:24px}
+  .ebook.dark .top .eb{color:rgba(255,255,255,.55)}
+  .ebook .mid h2{font-size:clamp(36px,5vw,56px);line-height:.95;letter-spacing:-.035em;font-weight:600;margin:0;position:relative;z-index:1}
+  .ebook .mid h2 em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:var(--accent)}
+  .ebook.dark .mid h2 em{color:var(--accent)}
+  .ebook .bot{display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-55);position:relative;z-index:1}
+  .ebook.dark .bot{color:rgba(255,255,255,.55)}
+  .ebook-art{position:absolute;inset:0;pointer-events:none}
+  .ebook-art .circle{position:absolute;border:1px solid var(--line)}
+  .ebook.dark .ebook-art .circle{border-color:rgba(255,255,255,.1)}
+
+  /* FOOTER */
+  .footer{margin-top:120px;padding-top:48px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-55);letter-spacing:.08em;text-transform:uppercase}
+
+  @media (max-width:960px){
+    .shell{padding:24px 20px 80px}
+    .cover,.section{grid-template-columns:1fr;gap:20px}
+    .color-grid,.cards,.tpl-grid,.logo-grid,.logo-rules,.type-intro-cards,.ebook-grid{grid-template-columns:1fr}
+    .radius-grid{grid-template-columns:repeat(3,1fr)}
+    .type-row{grid-template-columns:1fr;gap:12px}
+    .type-row .spec{text-align:left}
+    .cover .stats{grid-template-columns:1fr 1fr;gap:24px}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a class="brand" href="index.html"><img src="assets/logo-wordmark-black.png" alt="Galapa"/></a>
+    <div class="nav-links">
+      <a href="direction-a.html">A · Noir signature</a>
+      <a href="direction-b.html" class="active">B · Clarté Apple-like</a>
+      <a href="direction-c.html">C · Éditorial électrique</a>
+    </div>
+    <a href="index.html" class="nav-back">← Index</a>
+  </nav>
+
+  <!-- COVER -->
+  <section class="cover">
+    <div class="eyebrow">Direction B</div>
+    <div>
+      <div class="cover-logo"><img src="assets/logo-wordmark-black.png" alt="Galapa"/></div>
+      <h1>Clarté,<br/><em>quietly.</em></h1>
+      <p class="lede">On inverse la dominante : fonds clair et crème, encres noires, un serif italique terracotta en accent. Plus calme, plus premium, taillé pour contenus longs — ebooks, propositions commerciales, courriels éditoriaux.</p>
+      <div class="stats">
+        <div>Dominante<b>Crème 247</b></div>
+        <div>Typographie<b>Inter + serif accent</b></div>
+        <div>Accent<b>Terracotta</b></div>
+        <div>Usage<b>Long-form, premium</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLOR -->
+  <section class="section">
+    <div class="s-label">01 / Couleurs</div>
+    <div>
+      <h2 class="s-title">Du crème,<br/>de l'encre,<br/>une terre <em>chaude</em>.</h2>
+      <p class="s-intro">Le crème (#FAFAF7) remplace le blanc pur — plus chaud, plus éditorial, moins clinique. L'encre noire garde son autorité. La terre cuite apparaît seulement sur les italiques, l'astérisque, et un petit nombre de CTAs de contenu. Jamais en aplat large.</p>
+
+      <div class="color-grid">
+        <div class="color-chip">
+          <div class="sw" style="background:#fafaf7">
+            <div class="name">Paper / 247</div>
+            <div class="hex">#FAFAF7</div>
+          </div>
+          <div class="meta"><span>Fond primaire</span><span>Crème</span></div>
+        </div>
+        <div class="color-chip">
+          <div class="sw" style="background:#0a0a0a;color:#fff">
+            <div class="name">Ink / 0A</div>
+            <div class="hex">#0A0A0A</div>
+          </div>
+          <div class="meta"><span>Typo · CTA</span><span>Ratio 20:1</span></div>
+        </div>
+        <div class="color-chip">
+          <div class="sw" style="background:#c65a3a;color:#fff">
+            <div class="name">Terracotta</div>
+            <div class="hex">#C65A3A</div>
+          </div>
+          <div class="meta"><span>Accent</span><span>Italiques · ✱</span></div>
+        </div>
+      </div>
+
+      <div class="color-row">
+        <div class="swatch" style="background:#fafaf7">247</div>
+        <div class="swatch" style="background:#f3f1ec">241</div>
+        <div class="swatch" style="background:#ebe7df">235</div>
+        <div class="swatch" style="background:#d9d4c8">212</div>
+        <div class="swatch" style="background:#4a4a4a;color:#fff">74</div>
+        <div class="swatch" style="background:#0a0a0a;color:#fff">10</div>
+      </div>
+      <div class="color-row">
+        <div class="swatch" style="background:#fbebe4">terracotta 10</div>
+        <div class="swatch" style="background:#f5ccbd">terracotta 30</div>
+        <div class="swatch" style="background:#e29177;color:#fff">terracotta 60</div>
+        <div class="swatch" style="background:#c65a3a;color:#fff">terracotta 100</div>
+        <div class="swatch" style="background:#9c4027;color:#fff">terracotta 140</div>
+        <div class="swatch" style="background:#5f2715;color:#fff">terracotta 180</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TYPE -->
+  <section class="section">
+    <div class="s-label">02 / Typographie</div>
+    <div>
+      <h2 class="s-title">Inter structure.<br/>Le serif <em>chuchote</em>.</h2>
+      <p class="s-intro">Dans cette direction, Instrument Serif prend plus de place — non comme titre principal, mais comme voix intérieure. Chaque fois qu'un mot mérite une inflexion (<em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--accent)">quietly, scary, without</em>), le serif italique s'en charge, en terracotta.</p>
+
+      <div class="type-intro-cards">
+        <div class="type-card">
+          <div class="glyph">Aa</div>
+          <div class="name">Inter</div>
+          <div class="meta">Sans-serif · Corps de texte + titres</div>
+          <div class="weights"><span>300</span><span>400</span><span>500</span><span>600</span><span>700</span></div>
+        </div>
+        <div class="type-card">
+          <div class="glyph serif">Aa</div>
+          <div class="name">Instrument Serif</div>
+          <div class="meta">Serif éditorial · Accent italique systématique</div>
+          <div class="weights"><span>Regular</span><span>Italic</span></div>
+        </div>
+      </div>
+
+      <div class="type-stack">
+        <div class="type-row">
+          <span class="k">Display</span>
+          <h3 class="t-display">Quietly, <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--accent);font-weight:400">fast</em>.</h3>
+          <span class="spec">Inter 600 + Instrument Italic · 104 / 96 · −4</span>
+        </div>
+        <div class="type-row">
+          <span class="k">H1</span>
+          <h3 class="t-h1">Future-proof digital services.</h3>
+          <span class="spec">Inter 600 · 64 / 64 · −3.5</span>
+        </div>
+        <div class="type-row">
+          <span class="k">H2 + accent</span>
+          <h3 class="t-h2">Agency quality, <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--accent);font-weight:400">without</em> the premium.</h3>
+          <span class="spec">Inter 500 + Italic · 40 / 44 · −2.5</span>
+        </div>
+        <div class="type-row">
+          <span class="k">Italic large</span>
+          <p class="t-italic">quietly confident, quietly fast.</p>
+          <span class="spec">Instrument Italic · 48 / 49</span>
+        </div>
+        <div class="type-row">
+          <span class="k">H3</span>
+          <h3 class="t-h3">White-label digital services</h3>
+          <span class="spec">Inter 500 · 24 / 30 · −1.5</span>
+        </div>
+        <div class="type-row">
+          <span class="k">Body</span>
+          <p class="t-body">We believe in a lean, streamlined process that maximizes creativity while minimizing overhead. By integrating advanced tools and automation, we provide top-tier results without the typical budget-busting costs.</p>
+          <span class="spec">Inter 400 · 17 / 27</span>
+        </div>
+        <div class="type-row">
+          <span class="k">Small</span>
+          <p class="t-small">Agency partner · Standard plans · Custom projects</p>
+          <span class="spec">Inter 400 · 14 / 22</span>
+        </div>
+        <div class="type-row">
+          <span class="k">Eyebrow</span>
+          <p class="t-eyebrow">01 / About us · Galapa digital</p>
+          <span class="spec">Inter 500 · 11 / 14 · +20%</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGO -->
+  <section class="section">
+    <div class="s-label">03 / Logo</div>
+    <div>
+      <h2 class="s-title">Le wordmark<br/>s'adoucit :<br/><em>Galapa</em>, title-case.</h2>
+      <p class="s-intro">En direction B, le wordmark principal passe en <em style="font-family:'Instrument Serif',serif;font-style:italic;color:var(--accent)">Galapa</em> (title-case) pour le registre éditorial — emails, ebooks, signatures. L'astérisque reste, mais coloré en terracotta pour signaler la chaleur. La version GALAPA caps est gardée pour les usages affirmés.</p>
+
+      <div class="logo-grid">
+        <div class="logo-tile xl">
+          <span class="tag">Wordmark · noir</span>
+          <div class="wm"><img src="assets/logo-wordmark-black.png" alt="Galapa"/></div>
+        </div>
+        <div class="logo-tile mark">
+          <span class="tag">Marque ✱</span>
+          <div class="wm"><img src="assets/logo-mark-black.png" alt="Astérisque Galapa"/></div>
+        </div>
+        <div class="logo-tile invert sm">
+          <span class="tag">Inverse · blanc</span>
+          <div class="wm"><img src="assets/logo-wordmark-white.png" alt="Galapa"/></div>
+        </div>
+      </div>
+
+      <div class="logo-rules">
+        <div class="rule">
+          <div class="num">01 / FAIRE</div>
+          <div class="t">Title-case par défaut</div>
+          <div class="d">Pour emails, documents longs, signatures : <em style="font-family:'Instrument Serif',serif;font-style:italic">Galapa</em> en title-case donne le ton éditorial.</div>
+        </div>
+        <div class="rule">
+          <div class="num">02 / FAIRE</div>
+          <div class="t">Astérisque toujours terracotta</div>
+          <div class="d">L'astérisque est la seule couleur que porte le logo en direction B. C'est son point de chaleur.</div>
+        </div>
+        <div class="rule">
+          <div class="num">03 / FAIRE</div>
+          <div class="t">Garder CAPS pour l'affirmé</div>
+          <div class="d">Bannières, supports événementiels, slogans courts : GALAPA caps reste permis et encouragé.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPACING -->
+  <section class="section">
+    <div class="s-label">04 / Espace &amp; rayons</div>
+    <div>
+      <h2 class="s-title">Plus d'<em>air</em>.<br/>Toujours en 4.</h2>
+      <p class="s-intro">Même échelle qu'en direction A, mais la règle d'usage change : on recommande de monter d'un cran pour les sections et les marges externes. Le crème respire mieux quand on lui donne de la place.</p>
+
+      <div class="sp-grid">
+        <div class="sp-col"><div class="sp-bar" style="height:4px"></div><div class="lbl"><b>4</b>xs</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:8px"></div><div class="lbl"><b>8</b>sm</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:12px"></div><div class="lbl"><b>12</b></div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:16px"></div><div class="lbl"><b>16</b>md</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:24px"></div><div class="lbl"><b>24</b></div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:32px"></div><div class="lbl"><b>32</b>lg</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:48px"></div><div class="lbl"><b>48</b></div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:64px"></div><div class="lbl"><b>64</b>xl</div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:96px"></div><div class="lbl"><b>96</b></div></div>
+        <div class="sp-col"><div class="sp-bar" style="height:128px"></div><div class="lbl"><b>128</b>2xl</div></div>
+      </div>
+
+      <div class="radius-grid">
+        <div class="rd" style="border-radius:0"><b>0</b>none</div>
+        <div class="rd" style="border-radius:8px"><b>8</b>xs</div>
+        <div class="rd" style="border-radius:14px"><b>14</b>sm</div>
+        <div class="rd" style="border-radius:20px"><b>20</b>md</div>
+        <div class="rd" style="border-radius:28px"><b>28</b>lg</div>
+        <div class="rd" style="border-radius:999px"><b>999</b>pill</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPONENTS -->
+  <section class="section">
+    <div class="s-label">05 / Composants</div>
+    <div>
+      <h2 class="s-title">Les mêmes briques,<br/>un autre <em>ton</em>.</h2>
+      <p class="s-intro">Même inventaire de composants qu'en A — boutons, puces, cartes, tableau, champs — mais posés sur crème. Les rayons sont un peu plus ronds (14 au lieu de 12), les espacements internes plus généreux, et on gagne un bouton terracotta pour les CTAs à forte intention.</p>
+
+      <div class="comp-pane">
+        <h4>Boutons</h4>
+        <div class="btn-row" style="margin-bottom:20px">
+          <button class="btn btn-primary">Talk with Francis <span class="a">→</span></button>
+          <button class="btn btn-accent">Download ebook <span class="a">→</span></button>
+          <button class="btn btn-secondary">Our plans <span class="a">→</span></button>
+          <button class="btn btn-ghost">Learn more <span class="a">→</span></button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary btn-sm">Small <span class="a">→</span></button>
+          <button class="btn btn-primary">Default <span class="a">→</span></button>
+          <button class="btn btn-primary btn-lg">Large <span class="a">→</span></button>
+        </div>
+      </div>
+
+      <div class="comp-pane">
+        <h4>Puces &amp; badges</h4>
+        <div class="btn-row">
+          <span class="chip chip-solid">Standard Plan</span>
+          <span class="chip chip-line">Custom Project</span>
+          <span class="chip chip-accent">New</span>
+          <span class="chip chip-line"><span class="dot" style="background:var(--accent)"></span>Live</span>
+          <span class="chip chip-line">FR · EN</span>
+        </div>
+      </div>
+
+      <div class="comp-pane">
+        <h4>Cartes</h4>
+        <div class="cards">
+          <article class="card">
+            <span class="eyebr">01 · Speed</span>
+            <h3 class="t">Shipped <em>in weeks,</em> not months.</h3>
+            <p class="d">Des sites robustes, livrés vite, sans raccourcis. Processus lean, outillage automatisé.</p>
+            <div class="foot"><span>Standard plan</span><span>→</span></div>
+          </article>
+          <article class="card">
+            <span class="eyebr">02 · Price</span>
+            <h3 class="t">Agency quality, <em>without</em> the premium.</h3>
+            <p class="d">La qualité d'une agence haut de gamme, sans la facture qui va avec.</p>
+            <div class="foot"><span>Custom project</span><span>→</span></div>
+          </article>
+          <article class="card">
+            <span class="eyebr">03 · Quality</span>
+            <h3 class="t">Built to last, not to <em>impress</em>.</h3>
+            <p class="d">Pas de gadgets qui cassent en six mois. Des sites faits pour durer et grandir.</p>
+            <div class="foot"><span>Agency partner</span><span>→</span></div>
+          </article>
+        </div>
+      </div>
+
+      <div class="comp-pane">
+        <h4>Tableau — Projets</h4>
+        <table class="tbl">
+          <thead><tr><th>Client</th><th>Summary</th><th style="text-align:right">Type</th></tr></thead>
+          <tbody>
+            <tr><td>Boreal</td><td class="summary">Empowering Community Conversations</td><td class="type">Custom Project</td></tr>
+            <tr><td>Malmö</td><td class="summary">Real Estate meets scandinavian lifestyle</td><td class="type">Standard Plan</td></tr>
+            <tr><td>Auberge Internationale de Québec</td><td class="summary">Where Québec Adventures Begin</td><td class="type">Standard Plan</td></tr>
+            <tr><td>Constromax</td><td class="summary">A modern general contractor redefining luxury in construction</td><td class="type">Standard Plan</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="comp-pane">
+        <h4>Champ</h4>
+        <div class="field">
+          <label>Votre courriel</label>
+          <input class="input" placeholder="bonjour@agence.com" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEMPLATES -->
+  <section class="section">
+    <div class="s-label">06 / Gabarits</div>
+    <div>
+      <h2 class="s-title">Long-form,<br/><em>posément</em>.</h2>
+      <p class="s-intro">La direction B brille sur les formats éditoriaux : newsletter mensuelle, couverture d'ebook, proposition commerciale. Les gabarits ci-dessous sont des exemples — chacun peut être décliné en FR/EN avec le même gabarit de base.</p>
+
+      <!-- Email -->
+      <div class="tpl" style="margin-bottom:24px">
+        <div class="tpl-head"><span>E-mail · Newsletter éditoriale</span><b>600 × fluid · HTML safe</b></div>
+        <div class="tpl-body">
+          <div class="email">
+            <div class="email-head">
+              <div class="wm"><img src="assets/logo-wordmark-black.png" alt="Galapa" style="height:22px;width:auto;display:block"/></div>
+              <div class="edn">Éd. 04</div>
+            </div>
+            <div class="email-hero">
+              <div class="eb">Avril 2026 · White-label notes</div>
+              <h2>Trois sites livrés,<br/>une <em>seule</em> façon.</h2>
+              <p>Ce mois-ci, Boreal, Malmö et Constromax ont lancé leur nouveau site. Trois contextes différents, une même approche : lean, rapide, taillé pour durer.</p>
+            </div>
+            <div class="email-body">
+              <div class="email-divider"></div>
+              <p style="font-size:14px;line-height:1.6;color:var(--ink-55);margin:0">Besoin d'un partenaire pour livrer à votre agence sans gruger vos marges ? On vous explique comment on opère — en 15 minutes, sans présentation commerciale.</p>
+            </div>
+            <div class="email-cta"><a class="email-btn">Prendre 15 minutes <span class="a">→</span></a></div>
+            <div class="email-foot"><span>Galapa ✱ Montréal</span><span>Se désabonner</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner -->
+      <div class="tpl" style="margin-bottom:24px">
+        <div class="tpl-head"><span>Bannière display</span><b>1600 × 500 · LinkedIn cover</b></div>
+        <div class="tpl-body">
+          <div class="banner">
+            <div class="top">
+              <div class="wm"><img src="assets/logo-wordmark-black.png" alt="Galapa" style="height:20px;width:auto;display:block"/></div>
+              <div class="tag">White-label partner · 2026</div>
+            </div>
+            <div class="mid">Agency quality,<br/><em>without</em> the premium.</div>
+            <div class="bot">
+              <span class="url">galapadigital.com</span>
+              <span class="cta">Talk with Francis <span class="a">→</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social -->
+      <div class="tpl-grid" style="margin-bottom:24px">
+        <div class="tpl">
+          <div class="tpl-head"><span>LinkedIn · post</span><b>1200 × 1200</b></div>
+          <div class="tpl-body">
+            <div class="social">
+              <div class="top"><div class="wm"><img src="assets/logo-wordmark-black.png" alt="Galapa" style="height:18px;width:auto;display:block"/></div><div class="nb">N°04 / 12</div></div>
+              <h3>Shipped <em>in weeks,</em><br/>not months.</h3>
+              <div class="bot"><span>Standard plan</span><span>galapadigital.com</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="tpl">
+          <div class="tpl-head"><span>LinkedIn · post accent</span><b>1200 × 1200</b></div>
+          <div class="tpl-body">
+            <div class="social accent">
+              <div class="top"><div class="wm"><img src="assets/logo-wordmark-white.png" alt="Galapa" style="height:18px;width:auto;display:block"/></div><div class="nb">N°05 / 12</div></div>
+              <h3>We make launching websites <em>scary</em> easy.</h3>
+              <div class="bot"><span>Tag line FR/EN</span><span>galapadigital.com</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ebook -->
+      <div class="tpl">
+        <div class="tpl-head"><span>Ebook &amp; proposition</span><b>Couv. 3:4 · A4 safe</b></div>
+        <div class="tpl-body">
+          <div class="ebook-grid">
+            <div class="ebook">
+              <div class="ebook-art">
+                <div class="circle" style="width:320px;height:320px;border-radius:50%;right:-120px;bottom:-100px"></div>
+                <div class="circle" style="width:200px;height:200px;border-radius:50%;right:-40px;bottom:-20px"></div>
+              </div>
+              <div class="top">
+                <div class="wm"><img src="assets/logo-wordmark-black.png" alt="Galapa" style="height:18px;width:auto;display:block"/></div>
+                <div class="eb">Ebook · 01</div>
+              </div>
+              <div class="mid">
+                <h2>Launching<br/>websites,<br/><em>scary easy.</em></h2>
+              </div>
+              <div class="bot">
+                <span>A field guide for agencies</span>
+                <span>42 pp.</span>
+              </div>
+            </div>
+            <div class="ebook dark">
+              <div class="ebook-art">
+                <div class="circle" style="width:380px;height:380px;border-radius:50%;left:-160px;top:-120px"></div>
+                <div class="circle" style="width:240px;height:240px;border-radius:50%;left:-60px;top:-20px"></div>
+              </div>
+              <div class="top">
+                <div class="wm"><img src="assets/logo-wordmark-white.png" alt="Galapa" style="height:18px;width:auto;display:block"/></div>
+                <div class="eb">Proposition · 2026</div>
+              </div>
+              <div class="mid">
+                <h2>White-label<br/>digital, <em>quietly</em>.</h2>
+              </div>
+              <div class="bot">
+                <span>Pour agences partenaires</span>
+                <span>Confidentiel</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Direction B · Clarté Apple-like</span>
+    <span><a href="direction-c.html">Suivant · C — Éditorial électrique →</a></span>
+  </div>
+
+</div>
+</body>
+</html>
